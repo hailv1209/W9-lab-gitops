@@ -46,7 +46,7 @@ spec:
 
 ---
 # --- Service ---
-apiVersion: v1
+apiVersion: v2
 kind: Service
 metadata:
   name: api
