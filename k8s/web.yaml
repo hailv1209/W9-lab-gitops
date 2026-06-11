@@ -1,6 +1,68 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  name: web-html
+  namespace: demo
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html lang="vi">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Web App - GitOps</title>
+      <style>
+        body {
+          margin: 0;
+          font-family: 'Segoe UI', sans-serif;
+          background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .card {
+          background: white;
+          border-radius: 16px;
+          padding: 40px 60px;
+          text-align: center;
+          box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .card h1 {
+          color: #11998e;
+          margin: 0 0 10px;
+          font-size: 2.5em;
+        }
+        .card p {
+          color: #555;
+          margin: 0;
+          font-size: 1.2em;
+        }
+        .badge {
+          display: inline-block;
+          background: #11998e;
+          color: white;
+          padding: 6px 16px;
+          border-radius: 20px;
+          margin-top: 20px;
+          font-size: 0.9em;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="card">
+        <h1>Web App</h1>
+        <p>Deployed via GitOps + ArgoCD</p>
+        <span class="badge">Namespace: demo</span>
+      </div>
+    </body>
+    </html>
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
   name: web-config
   namespace: demo
   annotations:
@@ -28,9 +90,17 @@ spec:
       containers:
         - name: web
           image: nginx:1.27
+          volumeMounts:
+            - name: html
+              mountPath: /usr/share/nginx/html
+              readOnly: true
           envFrom:
             - configMapRef:
                 name: web-config
+      volumes:
+        - name: html
+          configMap:
+            name: web-html
 ---
 apiVersion: v1
 kind: Service
