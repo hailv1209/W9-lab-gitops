@@ -6,22 +6,22 @@ metadata:
   namespace: demo
 spec:
   metrics:
-    # Metric 1: Success Rate - Tỷ lệ request thành công phải >= 95%
-    # Fix: dùng scalar() để chuyển vector -> scalar, tránh lỗi mismatched types
-    # or vector(1) đảm bảo trả về 1.0 (100%) khi chưa có traffic (tránh Error)
+    # Metric 1: Success Rate >= 95%
+    # scalar() chuyển vector->scalar, tránh lỗi "mismatched types []float64 and float64"
+    # or vector(1) ở cả tử số và mẫu số: khi không có traffic → 1/1 = 1.0 (100% success = PASS)
     - name: success-rate
-      interval: 30s              # Đo mỗi 30 giây
-      count: 5                   # Đo 5 lần (tổng 2.5 phút)
-      successCondition: result >= 0.95  # Thành công nếu >= 95%
-      failureLimit: 2            # Cho phép fail tối đa 2 lần, lần 3 sẽ abort
-      consecutiveErrorLimit: 5   # Cho phép 5 lần Error liên tiếp (tránh abort sớm khi no-data)
+      interval: 30s
+      count: 5
+      successCondition: result >= 0.95
+      failureLimit: 2
+      consecutiveErrorLimit: 5
       provider:
         prometheus:
           address: http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090
           query: |
             scalar(
               sum(rate(flask_http_request_total{status!~"5..",app="api"}[2m]))
-              or vector(0)
+              or vector(1)
             )
             /
             scalar(
@@ -29,11 +29,12 @@ spec:
               or vector(1)
             )
 
-    # Metric 2: Error Rate - Tỷ lệ lỗi 5xx phải < 5%
+    # Metric 2: Error Rate < 5%
+    # or vector(0) ở tử số: khi không có lỗi → 0/1 = 0.0 (0% error = PASS)
     - name: error-rate
       interval: 30s
       count: 5
-      successCondition: result < 0.05   # Thành công nếu < 5% lỗi
+      successCondition: result < 0.05
       failureLimit: 2
       consecutiveErrorLimit: 5
       provider:
