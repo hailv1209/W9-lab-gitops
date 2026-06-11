@@ -8,8 +8,6 @@ metadata:
 data:
   MESSAGE: "hello from gitops"
 ---
-apiVersion: apps/v1
-kind: Deployment
 metadata:
   name: web
   namespace: demo
