@@ -1,0 +1,47 @@
+# --- AnalysisTemplate: Đánh giá tự động chất lượng canary ---
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: api-success-rate
+  namespace: demo
+spec:
+  metrics:
+    # Metric 1: Success Rate - Tỷ lệ request thành công phải >= 95%
+    - name: success-rate
+      interval: 30s              # Đo mỗi 30 giây
+      count: 5                   # Đo 5 lần (tổng 2.5 phút)
+      successCondition: result >= 0.95  # Thành công nếu >= 95%
+      failureLimit: 2            # Cho phép fail tối đa 2 lần, lần 3 sẽ abort
+      provider:
+        prometheus:
+          address: http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
+          query: |
+            sum(rate(flask_http_request_total{status!~"5..", app="api", pod=~"api-[a-z0-9]+-[a-z0-9]+"}[1m])) 
+            / 
+            sum(rate(flask_http_request_total{app="api", pod=~"api-[a-z0-9]+-[a-z0-9]+"}[1m]))
+    
+    # Metric 2: Error Rate - Tỷ lệ lỗi 5xx phải < 5%
+    - name: error-rate
+      interval: 30s
+      count: 5
+      successCondition: result < 0.05   # Thành công nếu < 5% lỗi
+      failureLimit: 2
+      provider:
+        prometheus:
+          address: http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
+          query: |
+            sum(rate(flask_http_request_total{status=~"5..", app="api", pod=~"api-[a-z0-9]+-[a-z0-9]+"}[1m])) 
+            / 
+            sum(rate(flask_http_request_total{app="api", pod=~"api-[a-z0-9]+-[a-z0-9]+"}[1m]))
+    
+    # Metric 3: Request Rate - Đảm bảo có traffic (tối thiểu 0.1 req/s)
+    - name: request-rate
+      interval: 30s
+      count: 3
+      successCondition: result > 0.1    # Phải có ít nhất traffic
+      failureLimit: 2
+      provider:
+        prometheus:
+          address: http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
+          query: |
+            sum(rate(flask_http_request_total{app="api", pod=~"api-[a-z0-9]+-[a-z0-9]+"}[1m]))

@@ -25,9 +25,9 @@ spec:
               containerPort: 8080
           env:
             - name: ERROR_RATE
-              value: "0"
+              value: "0"  # ERROR_RATE - Tỷ lệ lỗi giả lập (0-1)
             - name: VERSION
-              value: "v3"
+              value: "v3"  # VERSION - Version hiển thị trong response
           readinessProbe:
             httpGet:
               path: /healthz
@@ -36,13 +36,31 @@ spec:
             periodSeconds: 5
   strategy:
     canary:
+      # Canary tự động với AnalysisTemplate
       steps:
-        - setWeight: 25
-        - pause: {}
-        - setWeight: 50
+        - setWeight: 25                    # Bước 1: Chuyển 25% traffic sang canary
         - pause:
-            duration: 30
-        - setWeight: 100
+            duration: 30s                  # Chờ 30s để metrics ổn định
+        - analysis:                        # Phân tích tự động
+            templates:
+              - templateName: api-success-rate
+        - setWeight: 50                    # Nếu pass → 50% traffic
+        - pause:
+            duration: 30s
+        - analysis:                        # Phân tích lần 2
+            templates:
+              - templateName: api-success-rate
+        - setWeight: 100                   # Nếu pass → 100% (hoàn thành)
+      
+      # Tự động abort nếu analysis fail
+      analysis:
+        templates:
+          - templateName: api-success-rate
+        startingStep: 2                    # Bắt đầu từ step analysis đầu tiên
+      
+      # Tự động rollback về stable version khi abort
+      abortScaleDownDelaySeconds: 30       # Chờ 30s trước khi scale down canary pods
+      scaleDownDelaySeconds: 30            # Chờ 30s sau khi promote trước khi xóa old ReplicaSet
 
 ---
 # --- Service ---
