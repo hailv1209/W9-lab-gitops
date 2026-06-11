@@ -76,7 +76,7 @@ spec:
             - containerPort: 8080
           command: ["sh", "-c"]
           args:
-            - pip install -q flask==3.1.0 && python app.py
+            - pip install -q flask==3.1.0 && python /app/app.py
           envFrom:
             - configMapRef:
                 name: be-config
