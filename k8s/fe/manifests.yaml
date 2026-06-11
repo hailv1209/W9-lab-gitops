@@ -96,7 +96,7 @@ data:
         <button onclick="callBE()">Call BE API</button>
 
         <div id="result">Click button to call BE</div>
-        <div class="info">Calling: http://be:8080/api/greeting</div>
+        <div class="info">Calling: http://localhost:9999/api/greeting</div>
       </div>
 
       <script>
@@ -105,7 +105,7 @@ data:
           el.textContent = 'Calling BE...';
           el.className = 'loading';
           try {
-            const res = await fetch('http://be:8080/api/greeting');
+            const res = await fetch('http://localhost:9999/api/greeting');
             const data = await res.json();
             el.className = '';
             el.innerHTML = '<strong>Greeting:</strong> ' + data.greeting +
