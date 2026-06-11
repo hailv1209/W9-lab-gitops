@@ -32,7 +32,7 @@ spec:
             - configMapRef:
                 name: web-config
 ---
-apiVersion: v1
+apiVersion:
 kind: Service
 metadata:
   name: web
