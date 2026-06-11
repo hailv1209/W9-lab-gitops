@@ -20,11 +20,13 @@ metadata:
 data:
   app.py: |
     from flask import Flask, jsonify
+    from flask_cors import CORS
     import os
     import socket
     import time
 
     app = Flask(__name__)
+    CORS(app)
 
     @app.route("/")
     def home():
@@ -51,6 +53,7 @@ data:
         app.run(host="0.0.0.0", port=8080)
   requirements.txt: |
     flask==3.1.0
+    flask-cors==5.0.0
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -76,7 +79,7 @@ spec:
             - containerPort: 8080
           command: ["sh", "-c"]
           args:
-            - pip install -q flask==3.1.0 && python /app/app.py
+            - pip install -q flask==3.1.0 flask-cors==5.0.0 && python /app/app.py
           envFrom:
             - configMapRef:
                 name: be-config
