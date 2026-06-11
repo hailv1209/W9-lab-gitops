@@ -111,15 +111,22 @@ spec:
             Dashboard: http://grafana/d/api-metrics
 
 ---
-# --- Secret cho SMTP (tạo bằng kubectl) ---
-# kubectl create secret generic alertmanager-email-secret \
-#   -n demo \
-#   --from-literal=password='your-smtp-password'
-apiVersion: v1
-kind: Secret
-metadata:
-  name: alertmanager-email-secret
-  namespace: demo
-type: Opaque
-stringData:
-  password: "YOUR_SMTP_PASSWORD_HERE"  # ← THAY MẬT KHẨU SMTP
+# --- Secret cho SMTP ---
+# ⚠️ QUAN TRỌNG: Tạo secret này bằng lệnh kubectl trước khi apply file này
+# 
+# Bước 1: Tạo Gmail App Password
+#   1. Vào: https://myaccount.google.com/apppasswords
+#   2. Đăng nhập Gmail
+#   3. Tạo App Password cho "Mail"
+#   4. Copy password (16 ký tự, không có khoảng trắng)
+#
+# Bước 2: Tạo Secret
+#   kubectl create secret generic alertmanager-email-secret \
+#     -n demo \
+#     --from-literal=password='your-16-char-app-password'
+#
+# Bước 3: Kiểm tra
+#   kubectl get secret alertmanager-email-secret -n demo
+#
+# LƯU Ý: Không commit password vào Git!
+# Secret này chỉ để tham khảo cấu trúc, tạo bằng kubectl thay vì apply file này.

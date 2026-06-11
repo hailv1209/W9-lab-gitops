@@ -60,7 +60,6 @@ spec:
       
       # Tự động rollback về stable version khi abort
       abortScaleDownDelaySeconds: 30       # Chờ 30s trước khi scale down canary pods
-      scaleDownDelaySeconds: 30            # Chờ 30s sau khi promote trước khi xóa old ReplicaSet
 
 ---
 # --- Service ---
