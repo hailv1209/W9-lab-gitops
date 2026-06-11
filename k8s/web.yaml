@@ -32,7 +32,6 @@ spec:
             - configMapRef:
                 name: web-config
 ---
-apiVersion:
 kind: Service
 metadata:
   name: web
