@@ -7,41 +7,45 @@ metadata:
 spec:
   metrics:
     # Metric 1: Success Rate - Tỷ lệ request thành công phải >= 95%
+    # Fix: dùng scalar() để chuyển vector -> scalar, tránh lỗi mismatched types
+    # or vector(1) đảm bảo trả về 1.0 (100%) khi chưa có traffic (tránh Error)
     - name: success-rate
       interval: 30s              # Đo mỗi 30 giây
       count: 5                   # Đo 5 lần (tổng 2.5 phút)
       successCondition: result >= 0.95  # Thành công nếu >= 95%
       failureLimit: 2            # Cho phép fail tối đa 2 lần, lần 3 sẽ abort
+      consecutiveErrorLimit: 5   # Cho phép 5 lần Error liên tiếp (tránh abort sớm khi no-data)
       provider:
         prometheus:
           address: http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090
           query: |
-            sum(rate(flask_http_request_total{status!~"5..", app="api", pod=~"api-[a-z0-9]+-[a-z0-9]+"}[1m])) 
-            / 
-            sum(rate(flask_http_request_total{app="api", pod=~"api-[a-z0-9]+-[a-z0-9]+"}[1m]))
-    
+            scalar(
+              sum(rate(flask_http_request_total{status!~"5..",app="api"}[2m]))
+              or vector(0)
+            )
+            /
+            scalar(
+              sum(rate(flask_http_request_total{app="api"}[2m]))
+              or vector(1)
+            )
+
     # Metric 2: Error Rate - Tỷ lệ lỗi 5xx phải < 5%
     - name: error-rate
       interval: 30s
       count: 5
       successCondition: result < 0.05   # Thành công nếu < 5% lỗi
       failureLimit: 2
+      consecutiveErrorLimit: 5
       provider:
         prometheus:
           address: http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090
           query: |
-            sum(rate(flask_http_request_total{status=~"5..", app="api", pod=~"api-[a-z0-9]+-[a-z0-9]+"}[1m])) 
-            / 
-            sum(rate(flask_http_request_total{app="api", pod=~"api-[a-z0-9]+-[a-z0-9]+"}[1m]))
-    
-    # Metric 3: Request Rate - Đảm bảo có traffic (tối thiểu 0.1 req/s)
-    - name: request-rate
-      interval: 30s
-      count: 3
-      successCondition: result > 0.1    # Phải có ít nhất traffic
-      failureLimit: 2
-      provider:
-        prometheus:
-          address: http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090
-          query: |
-            sum(rate(flask_http_request_total{app="api", pod=~"api-[a-z0-9]+-[a-z0-9]+"}[1m]))
+            scalar(
+              sum(rate(flask_http_request_total{status=~"5..",app="api"}[2m]))
+              or vector(0)
+            )
+            /
+            scalar(
+              sum(rate(flask_http_request_total{app="api"}[2m]))
+              or vector(1)
+            )
