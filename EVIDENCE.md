@@ -10,19 +10,20 @@
 
 - ArgoCD đã sync các App: `api`, `web`, `be`, `kube-prometheus-stack`
 
-[screenshot: ArgoCD UI — danh sách các App đều Synced & Healthy]
+<img width="1150" height="506" alt="image" src="https://github.com/user-attachments/assets/d394c5b1-7859-4a77-b694-80e823e74e17" />
 
 - Rollout `api` đang ở trạng thái Healthy với image stable
 
-[screenshot: kubectl argo rollouts get rollout api -n demo]
+<img width="1020" height="741" alt="image" src="https://github.com/user-attachments/assets/e656cfdd-5c70-4a85-b797-8dfd9da69298" />
 
 ---
 
 ### 1.2. Deploy bản mới qua Git (ArgoCD sync)
 
-- Thay đổi VERSION trong `k8s-api/api.yaml`: `v5` → `v6`
+- Thay đổi VERSION trong `k8s-api/api.yaml`: `v3` → `v4`
 
-[screenshot: Git commit trong VS Code / terminal]
+<img width="1603" height="447" alt="image" src="https://github.com/user-attachments/assets/faa1fd31-ca8c-47b2-80b4-6df1161fe111" />
+
 
 ```bash
 git add k8s-api/api.yaml
@@ -32,7 +33,8 @@ git push
 
 - ArgoCD tự động phát hiện thay đổi và sync trong ~30 giây
 
-[screenshot: ArgoCD UI — App api chuyển sang trạng thái OutOfSync rồi Syncing]
+<img width="545" height="562" alt="image" src="https://github.com/user-attachments/assets/9a26dcc4-67fe-4955-b1af-361aa6a58568" />
+
 
 ---
 
@@ -40,11 +42,11 @@ git push
 
 - Rollout tiến hành canary: 25% → 50% → analysis → 100%
 
-[screenshot: kubectl argo rollouts get rollout api -n demo — thấy các bước canary tiến triển]
+<img width="545" height="562" alt="image" src="https://github.com/user-attachments/assets/7698e466-851d-41ce-9ca2-b6131d224859" />
 
 - Canary analysis **pass** (success rate >= 95%) → promote lên 100%
 
-[screenshot: AnalysisTemplate chạy thành công, success-rate: pass]
+<img width="679" height="474" alt="image" src="https://github.com/user-attachments/assets/e166f69c-1f21-464d-b965-6424249f9135" />
 
 ---
 
@@ -57,13 +59,12 @@ git revert HEAD --no-edit
 git push
 ```
 
-- Bắt đầu đếm thời gian
-
-[screenshot: terminal — bắt đầu rollback, ghi nhận thời gian]
+<img width="791" height="586" alt="image" src="https://github.com/user-attachments/assets/ff0fa2e2-4d90-4a1d-8667-8b58b0681273" />
 
 - ArgoCD sync → Rollout hoàn thành trong < 5 phút
 
-[screenshot: kubectl argo rollouts get rollout api -n demo sau khi rollback hoàn tất]
+<img width="675" height="651" alt="image" src="https://github.com/user-attachments/assets/83d69e21-3b22-457c-96a1-8cbd2f08cea8" />
+
 
 - Kết quả:
 
