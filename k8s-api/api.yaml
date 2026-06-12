@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: w9-api:3
+          image: localhost:5001/w9-api:3
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
