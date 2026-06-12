@@ -5,7 +5,7 @@ metadata:
   name: api-slo-alerts
   namespace: demo
   labels:
-    release: prometheus     # Để Prometheus Operator nhận rule này
+    release: kube-prometheus-stack
     app: api
 spec:
   groups:
@@ -79,7 +79,7 @@ spec:
     repeatInterval: 12h               # Gửi lại sau 12h nếu vẫn fire
     receiver: email-receiver
     matchers:
-      - name: app
+      - name: service
         value: api
         matchType: "="
   

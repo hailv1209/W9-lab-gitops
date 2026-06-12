@@ -1,0 +1,9 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Alertmanager
+metadata:
+  name: kube-prometheus-stack-alertmanager
+  namespace: monitoring
+spec:
+  alertmanagerConfigSelector:
+    matchLabels:
+      alertmanagerConfig: main
