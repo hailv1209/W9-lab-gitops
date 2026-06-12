@@ -10,11 +10,12 @@
 
 - ArgoCD đã sync các App: `api`, `web`, `be`, `kube-prometheus-stack`
 
-<img width="1150" height="506" alt="image" src="https://github.com/user-attachments/assets/d394c5b1-7859-4a77-b694-80e823e74e17" />
+<img width="1666" height="842" alt="image" src="https://github.com/user-attachments/assets/69b12904-c480-446d-a283-739941966c93" />
+
 
 - Rollout `api` đang ở trạng thái Healthy với image stable
 
-<img width="1020" height="741" alt="image" src="https://github.com/user-attachments/assets/e656cfdd-5c70-4a85-b797-8dfd9da69298" />
+<img width="1623" height="827" alt="image" src="https://github.com/user-attachments/assets/4d396daf-0116-4010-870e-8debdc901a52" />
 
 ---
 
@@ -83,11 +84,12 @@ git push
 
 - Kiểm tra PrometheusRule `api-slo-alerts` trong namespace `demo`
 
-[screenshot: kubectl get prometheusrule -n demo]
+<img width="881" height="163" alt="image" src="https://github.com/user-attachments/assets/1060eac8-ea7c-4243-b073-339746bb8908" />
 
 - Kiểm tra AlertmanagerConfig `api-email-alerts` đã được apply
 
-[screenshot: kubectl get alertmanagerconfig -n demo]
+<img width="955" height="158" alt="image" src="https://github.com/user-attachments/assets/ed64f305-83be-4cdf-ae10-41cc9c95574e" />
+
 
 ### 2.2. Kiểm tra Alert baseline (không có alert)
 
@@ -97,7 +99,8 @@ git push
 
 - Kiểm tra Prometheus: không có alert nào firing
 
-[screenshot: Prometheus UI — Alerts page, không có alert firing]
+<img width="1909" height="833" alt="image" src="https://github.com/user-attachments/assets/bf012631-aab4-41bc-a3bb-f188b96dd638" />
+
 
 ### 2.3. Trigger Alert (tạo lỗi 500)
 
@@ -148,11 +151,13 @@ Email chứa đầy đủ thông tin:
 
 ### 3.1. Kiểm tra AnalysisTemplate đã apply
 
-[screenshot: kubectl get analysistemplate -n demo]
+<img width="893" height="170" alt="image" src="https://github.com/user-attachments/assets/132b44f1-1fb4-4ed2-8acc-5e8c4e4818c7" />
 
 - Xem nội dung AnalysisTemplate `api-success-rate`
 
-[screenshot: kubectl describe analysistemplate api-success-rate -n demo]
+<img width="1445" height="960" alt="image" src="https://github.com/user-attachments/assets/630216df-beef-4a5f-afcf-9febb13b870a" />
+<img width="1410" height="653" alt="image" src="https://github.com/user-attachments/assets/b9be2adb-4b3e-4d2b-a05e-070c4960ce38" />
+
 
 ### 3.2. Deploy bản TỐT — Auto-promote
 
@@ -195,45 +200,3 @@ Email chứa đầy đủ thông tin:
 
 [screenshot: kubectl get pods -n demo -l app=api — tất cả pods đang Running]
 
-### 3.5. So sánh: Trước vs Sau khi dùng AnalysisTemplate
-
-| | Trước (pause tay) | Sau (AnalysisTemplate) |
-|--|--|--|
-| Sau 25% | Cần manual pause + approve | Tự chạy Analysis |
-| Đánh giá chất lượng | Con người quyết định | Prometheus tự đo |
-| Bản lỗi | Cần manual abort | Tự động abort |
-| Thời gian rollback | Phụ thuộc con người | < 5 phút tự động |
-
----
-
-## 4. Tổng kết
-
-| Yêu cầu | Kết quả |
-|----------|---------|
-| ✅ GitOps — Mọi thay đổi qua Git | ArgoCD sync tự động |
-| ✅ Rollback < 5 phút | Rollback qua `git revert` hoàn tất trong ~3-4 phút |
-| ✅ SLO + Alert → Email | Alert fire khi success rate < 95%, email gửi về inbox |
-| ✅ Canary tự động | AnalysisTemplate đo chất lượng, bản tốt promote, bản lỗi abort |
-| ✅ Không có downtime | Stable pods luôn sẵn sàng phục vụ |
-
----
-
-## 5. Lệnh kiểm tra nhanh
-
-```bash
-# Kiểm tra tất cả thành phần
-kubectl get all -n demo
-kubectl get prometheusrule -n demo
-kubectl get alertmanagerconfig -n demo
-kubectl get analysistemplate -n demo
-
-# Theo dõi rollout
-kubectl argo rollouts get rollout api -n demo --watch
-
-# Kiểm tra alerts
-kubectl port-forward -n monitoring svc/prometheus-kube-prometheus-prometheus 9090
-# Mở http://localhost:9090/alerts
-
-# Kiểm tra logs Alertmanager
-kubectl logs -n monitoring -l app.kubernetes.io/name=alertmanager --tail=50
-```
