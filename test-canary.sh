@@ -83,18 +83,16 @@ test_good_version() {
     echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     echo ""
     
-    echo "📝 Preparing good version (ERROR_RATE=0)..."
+    echo "📝 Preparing good version..."
     
     # Backup current file
     cp $API_FILE ${API_FILE}.backup
     
     # Update to good version
-    sed -i 's/value: ".*" # ERROR_RATE/value: "0" # ERROR_RATE/' $API_FILE
     sed -i 's/value: "v.*"/value: "v1-good"/' $API_FILE
     sed -i 's/image: w9-api:.*/image: w9-api:good/' $API_FILE
     
     echo "✓ Updated $API_FILE:"
-    echo "  - ERROR_RATE: 0 (no errors)"
     echo "  - VERSION: v1-good"
     echo "  - IMAGE: w9-api:good"
     echo ""
@@ -125,15 +123,13 @@ test_bad_version() {
     echo -e "${RED}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     echo ""
     
-    echo "📝 Preparing bad version (ERROR_RATE=0.5)..."
+    echo "📝 Preparing bad version..."
     
     # Update to bad version
-    sed -i 's/value: ".*" # ERROR_RATE/value: "0.5" # ERROR_RATE/' $API_FILE
     sed -i 's/value: "v.*"/value: "v2-bad"/' $API_FILE
     sed -i 's/image: w9-api:.*/image: w9-api:bad/' $API_FILE
     
     echo "✓ Updated $API_FILE:"
-    echo "  - ERROR_RATE: 0.5 (50% errors)"
     echo "  - VERSION: v2-bad"
     echo "  - IMAGE: w9-api:bad"
     echo ""

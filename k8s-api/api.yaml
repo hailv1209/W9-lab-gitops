@@ -24,8 +24,6 @@ spec:
             - name: http
               containerPort: 8080
           env:
-            - name: ERROR_RATE
-              value: "0.3"  # ERROR_RATE - Tỷ lệ lỗi giả lập (0-1)
             - name: VERSION
               value: "v5"  # VERSION - Version hiển thị trong response
           readinessProbe:

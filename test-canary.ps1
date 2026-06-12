@@ -96,20 +96,18 @@ function Test-GoodVersion {
     Write-Success "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     Write-Host ""
     
-    Write-Info "📝 Preparing good version (ERROR_RATE=0)..."
+    Write-Info "📝 Preparing good version..."
     
     # Backup
     Copy-Item $API_FILE "${API_FILE}.backup" -Force
     
     # Update file
     $content = Get-Content $API_FILE -Raw
-    $content = $content -replace 'value: ".*" # ERROR_RATE', 'value: "0" # ERROR_RATE'
     $content = $content -replace 'value: "v.*"  # VERSION', 'value: "v1-good"  # VERSION'
     $content = $content -replace 'image: w9-api:.*', 'image: w9-api:good'
     Set-Content $API_FILE $content
     
     Write-Success "✓ Updated $API_FILE:"
-    Write-Host "  - ERROR_RATE: 0 (no errors)"
     Write-Host "  - VERSION: v1-good"
     Write-Host "  - IMAGE: w9-api:good"
     Write-Host ""
@@ -141,17 +139,15 @@ function Test-BadVersion {
     Write-Error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     Write-Host ""
     
-    Write-Info "📝 Preparing bad version (ERROR_RATE=0.5)..."
+    Write-Info "📝 Preparing bad version..."
     
     # Update file
     $content = Get-Content $API_FILE -Raw
-    $content = $content -replace 'value: ".*" # ERROR_RATE', 'value: "0.5" # ERROR_RATE'
     $content = $content -replace 'value: "v.*"  # VERSION', 'value: "v2-bad"  # VERSION'
     $content = $content -replace 'image: w9-api:.*', 'image: w9-api:bad'
     Set-Content $API_FILE $content
     
     Write-Success "✓ Updated $API_FILE:"
-    Write-Host "  - ERROR_RATE: 0.5 (50% errors)"
     Write-Host "  - VERSION: v2-bad"
     Write-Host "  - IMAGE: w9-api:bad"
     Write-Host ""
