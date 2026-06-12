@@ -1,20 +1,17 @@
-# Script gửi traffic đến API để tạo metrics cho AnalysisTemplate
-# Chạy: .\send-traffic.ps1
+# Script gui traffic den API de tao metrics cho AnalysisTemplate
+# Chay: .\send-traffic.ps1
 
 Write-Host "=====================================" -ForegroundColor Cyan
-Write-Host "🚀 GỬI TRAFFIC ĐẾN API" -ForegroundColor Cyan
+Write-Host "[START] GUI TRAFFIC DEN API" -ForegroundColor Cyan
 Write-Host "=====================================" -ForegroundColor Cyan
 
-# Lấy IP của API service
-$api_ip = kubectl get svc api -n demo -o jsonpath='{.spec.clusterIP}'
+# Start port-forwarding
+Write-Host "[INFO] Starting port-forward to API service..." -ForegroundColor Gray
+$pfJob = Start-Process kubectl -ArgumentList "port-forward svc/api -n demo 8888:8080" -NoNewWindow -PassThru
+Start-Sleep -Seconds 3
 
-if (-not $api_ip) {
-    Write-Host "❌ Không tìm thấy service API" -ForegroundColor Red
-    exit 1
-}
-
-Write-Host "📍 API Service: http://${api_ip}:8080" -ForegroundColor Green
-Write-Host "⏰ Gửi traffic liên tục... Nhấn Ctrl+C để dừng" -ForegroundColor Yellow
+Write-Host "[INFO] API Service: http://localhost:8888" -ForegroundColor Green
+Write-Host "[WAIT] Gui traffic lien tuc... Nhan Ctrl+C de dung" -ForegroundColor Yellow
 Write-Host ""
 
 $count = 0
@@ -24,7 +21,8 @@ $failed = 0
 try {
     while ($true) {
         try {
-            $response = Invoke-RestMethod -Uri "http://${api_ip}:8080/api/data" -Method GET -TimeoutSec 2
+            # Fix route: using "/" instead of "/api/data" since app.py only serves "/"
+            $response = Invoke-RestMethod -Uri "http://localhost:8888/" -Method GET -TimeoutSec 2
             $count++
             $success++
             
@@ -45,9 +43,14 @@ try {
         Start-Sleep -Milliseconds 500
     }
 } finally {
+    if ($pfJob) { 
+        Write-Host "`n[INFO] Stopping port-forward..." -ForegroundColor Gray
+        Stop-Process -Id $pfJob.Id -Force -ErrorAction SilentlyContinue 
+    }
+    
     Write-Host ""
     Write-Host "=====================================" -ForegroundColor Cyan
-    Write-Host "📊 TỔNG KẾT" -ForegroundColor Cyan
+    Write-Host "[SUMMARY] TONG KET" -ForegroundColor Cyan
     Write-Host "=====================================" -ForegroundColor Cyan
     Write-Host "Total requests: $count"
     Write-Host "Success: $success"

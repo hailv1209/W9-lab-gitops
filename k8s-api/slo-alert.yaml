@@ -25,6 +25,7 @@ spec:
             severity: critical
             team: backend
             slo: availability
+            app: api
           annotations:
             summary: "API Error Rate vượt ngưỡng SLO"
             description: |
@@ -52,6 +53,7 @@ spec:
             severity: warning
             team: backend
             slo: latency
+            app: api
           annotations:
             summary: "API Latency cao"
             description: |
