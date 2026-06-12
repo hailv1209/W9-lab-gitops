@@ -20,7 +20,7 @@ spec:
               /
               sum(rate(flask_http_request_total{app="api"}[5m]))
             ) < 0.95
-          for: 2m                          # Fire sau 2 phút vi phạm liên tục
+          for: 30s                          # Fire sau 30s vi phạm liên tục (test: giảm từ 2m)
           labels:
             severity: critical
             team: backend
@@ -48,7 +48,7 @@ spec:
             histogram_quantile(0.95, 
               sum(rate(flask_http_request_duration_seconds_bucket{app="api"}[5m])) by (le)
             ) > 0.5
-          for: 5m
+          for: 1m                           # Fire sau 1 phút vi phạm liên tục (test: giảm từ 5m)
           labels:
             severity: warning
             team: backend
