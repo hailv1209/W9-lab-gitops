@@ -9,3 +9,7 @@ def index():
     return jsonify(ok=True, version=VER)
 @app.get("/healthz")
 def healthz(): return "ok", 200
+
+@app.get("/api/bug")
+def bug():
+    return jsonify(error="simulated internal server error"), 500
