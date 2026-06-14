@@ -16,9 +16,9 @@ spec:
         - alert: APIHighErrorRate
           expr: |
             (
-              sum(rate(flask_http_request_total{app="api", status!~"5.."}[5m]))
+              sum(rate(flask_http_request_total{path="/api/bug", status!~"5.."}[5m]))
               /
-              sum(rate(flask_http_request_total{app="api"}[5m]))
+              sum(rate(flask_http_request_total{path="/api/bug"}[5m]))
             ) < 0.95
           for: 30s                          # Fire sau 30s vi phạm liên tục (test: giảm từ 2m)
           labels:
@@ -47,7 +47,7 @@ spec:
         - alert: APIHighLatency
           expr: |
             histogram_quantile(0.95,
-              sum(rate(flask_http_request_duration_seconds_bucket{app="api"}[5m])) by (le)
+              sum(rate(flask_http_request_duration_seconds_bucket{path="/api/bug"}[5m])) by (le)
             ) > 0.5
           for: 1m                           # Fire sau 1 phút vi phạm liên tục (test: giảm từ 5m)
           labels:
