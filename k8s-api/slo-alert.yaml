@@ -16,9 +16,9 @@ spec:
         - alert: APIHighErrorRate
           expr: |
             (
-              sum(rate(flask_http_request_total{path="/api/bug", status!~"5.."}[5m]))
+              sum(rate(flask_http_request_duration_seconds_count{path="/api/bug", status!~"5.."}[5m]))
               /
-              sum(rate(flask_http_request_total{path="/api/bug"}[5m]))
+              sum(rate(flask_http_request_duration_seconds_count{path="/api/bug"}[5m]))
             ) < 0.95
           for: 30s                          # Fire sau 30s vi phạm liên tục (test: giảm từ 2m)
           labels:
