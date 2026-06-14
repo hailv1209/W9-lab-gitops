@@ -1,7 +1,9 @@
 FROM python:3.12-slim
-RUN pip install flask requests prometheus-flask-exporter
 WORKDIR /app
-COPY app.py .
+COPY backend/requirements.txt .
+RUN pip install --no-cache-dir flask requests prometheus-flask-exporter
+COPY backend/app.py .
+COPY fe/ ./fe/
 EXPOSE 5000
 ENV FLASK_APP=app.py
 CMD ["python", "app.py"]

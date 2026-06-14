@@ -8,7 +8,7 @@ import threading
 import requests
 from flask import Flask, jsonify, send_from_directory, request
 
-app = Flask(__name__, static_folder="../fe", static_url_path="")
+app = Flask(__name__, static_folder="fe", static_url_path="")
 
 # --- Config ---
 K8S_API = "https://kubernetes.default.svc"
