@@ -26,6 +26,7 @@ spec:
             slo: availability
             app: api
             service: api
+            namespace: demo
           annotations:
             summary: "API Error Rate vượt ngưỡng SLO"
             description: |
