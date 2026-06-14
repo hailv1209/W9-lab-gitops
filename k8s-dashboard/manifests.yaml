@@ -50,7 +50,7 @@ spec:
       containers:
         - name: api
           image: haile1209/dashboard-api:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 5000
           env:
