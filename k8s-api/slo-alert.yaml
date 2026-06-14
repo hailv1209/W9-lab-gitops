@@ -15,11 +15,10 @@ spec:
         # SLO: API Success Rate phải >= 95% trong 5 phút
         - alert: APIHighErrorRate
           expr: |
-            (
-              sum(rate(flask_http_request_duration_seconds_count{path="/api/bug", status!~"5.."}[5m]))
-              /
-              sum(rate(flask_http_request_duration_seconds_count{path="/api/bug"}[5m]))
-            ) < 0.95
+            sum(rate(flask_http_request_duration_seconds_count{path="/api/bug", status="500"}[5m]))
+            /
+            sum(rate(flask_http_request_duration_seconds_count{path="/api/bug"}[5m]))
+            > 0.05
           for: 30s                          # Fire sau 30s vi phạm liên tục (test: giảm từ 2m)
           labels:
             severity: critical
