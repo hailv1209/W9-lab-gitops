@@ -106,44 +106,17 @@ git push
 
 - Deploy bản mới với `ERROR_RATE=0.3` (hoặc chỉnh sửa app để trả lỗi 500)
 
-[screenshot: git commit & push với cấu hình lỗi]
-
 - Gửi traffic để tạo metrics
-
-[screenshot: terminal — gửi ~200 requests]
 
 - Sau ~2-3 phút, Prometheus Rule đo được success rate < 95%
 
-[screenshot: Prometheus UI — query success rate, kết quả < 95%]
+<img width="1908" height="946" alt="image" src="https://github.com/user-attachments/assets/afb482f5-4974-4c8f-b793-6cc2eaba322e" />
 
 ### 2.4. Alert fire & Email được gửi
 
-- Alert `APIHighErrorRate` chuyển sang trạng thái **FIRING**
-
-[screenshot: Prometheus UI — Alerts page, APIHighErrorRate = FIRING]
-
-- Kiểm tra Alertmanager logs xác nhận email đã gửi
-
-```bash
-kubectl logs -n monitoring -l app.kubernetes.io/name=alertmanager --tail=50
-```
-
-[screenshot: logs Alertmanager — thấy dòng gửi email thành công]
-
 - **Email nhận được tại inbox**
 
-[screenshot: Email từ Alertmanager, subject "🚨 [CRITICAL] APIHighErrorRate"]
-
-### 2.5. Nội dung email alert
-
-Email chứa đầy đủ thông tin:
-
-- Alert name: `APIHighErrorRate`
-- Severity: `critical`
-- Success rate hiện tại: `< 95%`
-- Hướng dẫn khắc phục (kiểm tra logs, rollback, dashboard link)
-
-[screenshot: Chi tiết nội dung email alert]
+<img width="1569" height="807" alt="image" src="https://github.com/user-attachments/assets/9cdf5caf-70a1-4a42-8bbe-c2d35f26566e" />
 
 ---
 
