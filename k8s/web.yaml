@@ -70,8 +70,6 @@ metadata:
 data:
   MESSAGE: "hello from gitops"
 ---
-apiVersion: apps/v1
-kind: Deployment
 metadata:
   name: web
   namespace: demo
@@ -102,7 +100,6 @@ spec:
           configMap:
             name: web-html
 ---
-apiVersion: v1
 kind: Service
 metadata:
   name: web
